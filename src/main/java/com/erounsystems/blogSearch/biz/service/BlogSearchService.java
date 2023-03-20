@@ -3,14 +3,12 @@ package com.erounsystems.blogSearch.biz.service;
 
 
 
-import static com.erounsystems.blogSearch.common.enums.ErrorCode.INVALID_PARAMETER;
-
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,9 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogReqDto;
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogResDto;
 import com.erounsystems.blogSearch.biz.entity.Response;
-import com.erounsystems.blogSearch.biz.entity.TpSearchKeyword;
 import com.erounsystems.blogSearch.biz.repository.TpSearchKeywordRepository;
-import com.erounsystems.blogSearch.exception.CustomException;
 
 import lombok.RequiredArgsConstructor;;
 
@@ -45,45 +41,35 @@ public class BlogSearchService {
     private TpSearchKeywordRepository searchKeywordRepository;
    
 	public KakaoBlogResDto getBlog(KakaoBlogReqDto param) {
+		
 		RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("Authorization", "KakaoAK " + key); //Authorization 설정
-        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders); //엔티티로 만들기
+        HttpHeaders httpHeaders = new HttpHeaders();        
+        //Authorization 설정
+        httpHeaders.set("Authorization", "KakaoAK " + key);
+        //httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        
+        HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders); 
+        
+//        restTemplate.getInterceptors().add((request, body, execution) -> {
+//            ClientHttpResponse response = execution.execute(request,body);
+//            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+//            return response;
+//        });
+        
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(url) 
-                .queryParam("query", param)
+                .queryParam("query", param.getQuery())
                 .build()
-                .encode(StandardCharsets.UTF_8) //인코딩
+                .encode(StandardCharsets.UTF_8) 
                 .toUri();
 
         //GetForObject는 헤더를 정의할 수 없음
-        ResponseEntity<KakaoBlogResDto> result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, KakaoBlogResDto.class);
+        KakaoBlogResDto result = restTemplate.exchange(targetUrl, HttpMethod.GET, httpEntity, new ParameterizedTypeReference<KakaoBlogResDto>(){}).getBody();
 //        restTemplate.setErrorHandler(new MyErrorHandler());
         
-        return result.getBody(); //내용 반환
+        return result; //내용 반환
 	}
 
 
 
-	public void saveKeyword(String query) {
-		// TODO Auto-generated method stub
-		TpSearchKeyword searchKeyword = searchKeywordRepository.findByKeyword(query);
-		
-		if(searchKeyword != null) {
-			searchKeyword.setSearchCnt(searchKeyword.getSearchCnt() +1 );
-			searchKeywordRepository.save(searchKeyword);
-		}else {
-			searchKeyword = new TpSearchKeyword();
-			searchKeyword.setKeyword(query);
-			searchKeyword.setSearchCnt(1);
-			searchKeywordRepository.save(searchKeyword);
-		}
-		List<TpSearchKeyword>  temp= searchKeywordRepository.findAll();
-		if(true)
-			//throw new ParameterException("hashtag name cannot be null or empty");
-
-					throw new CustomException(INVALID_PARAMETER);
-		
-				
-	}
 }
