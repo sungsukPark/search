@@ -1,6 +1,6 @@
 package com.erounsystems.blogSearch.biz.vo;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import lombok.Data;
 
@@ -12,6 +12,6 @@ public class KakaoBlogDocuments {
 	private String url;
 	private String blogname;
 	private String thumbnail;
-	private LocalDateTime datetime;
+	private ZonedDateTime datetime;
 
 }
