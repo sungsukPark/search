@@ -12,7 +12,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -20,7 +22,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogReqDto;
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogResDto;
-import com.erounsystems.blogSearch.biz.entity.Response;
 import com.erounsystems.blogSearch.biz.repository.TpSearchKeywordRepository;
 
 import lombok.RequiredArgsConstructor;;
@@ -30,7 +31,6 @@ import lombok.RequiredArgsConstructor;;
 @Transactional
 public class BlogSearchService {
 
-    private ApiService<Response> apiService;
 
     @Value("${kakao.openapi.blog.url}")
     private String url;
@@ -50,11 +50,11 @@ public class BlogSearchService {
         
         HttpEntity<String> httpEntity = new HttpEntity<>(httpHeaders); 
         
-//        restTemplate.getInterceptors().add((request, body, execution) -> {
-//            ClientHttpResponse response = execution.execute(request,body);
-//            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-//            return response;
-//        });
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            ClientHttpResponse response = execution.execute(request,body);
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            return response;
+        });
         
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(url) 

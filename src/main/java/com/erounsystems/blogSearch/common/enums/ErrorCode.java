@@ -24,7 +24,9 @@ public enum ErrorCode {
     ALREADY_SAVED_FESTIVAL(409, "이미 저장한 페스티벌입니다."),
 
     //500 INTERNAL SERVER ERROR
-    INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 서버 팀에 연락주세요!");
+    INTERNAL_SERVER_ERROR(500, "서버 에러입니다. 서버 팀에 연락주세요!"),
+	
+	ENTITY_DUPLICATION(501, "entity duplication error occurred");
     
     private final int status;
     private final String message;

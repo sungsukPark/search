@@ -5,11 +5,16 @@ import java.util.List;
 
 import com.erounsystems.blogSearch.biz.vo.KakaoBlogDocuments;
 import com.erounsystems.blogSearch.biz.vo.KakaoBlogMeta;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-
-@Data
+@Getter
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class KakaoBlogResDto  implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -17,4 +22,9 @@ public class KakaoBlogResDto  implements Serializable {
 	private KakaoBlogMeta meta;
     private List<KakaoBlogDocuments> documents;
 
+    public KakaoBlogResDto(KakaoBlogMeta meta, List<KakaoBlogDocuments> documents){
+    	this.meta = meta;
+    	this.documents = documents;
+    	
+    }
 }

@@ -1,18 +1,16 @@
 package com.erounsystems.blogSearch.biz.service;
 
-import static com.erounsystems.blogSearch.common.enums.ErrorCode.INVALID_PARAMETER;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.erounsystems.blogSearch.biz.dto.SearchKeywordReqDto;
 import com.erounsystems.blogSearch.biz.entity.TpSearchKeyword;
 import com.erounsystems.blogSearch.biz.repository.TpSearchKeywordRepository;
 import com.erounsystems.blogSearch.exception.CustomException;
+import static com.erounsystems.blogSearch.common.enums.ErrorCode.ENTITY_DUPLICATION;
 @Service
 @Transactional
 public class SearchKeywordService {
@@ -26,27 +24,24 @@ public class SearchKeywordService {
 	}
 	
 
-	public void saveKeyword(String query) {
-		// TODO Auto-generated method stub
+	public TpSearchKeyword saveKeyword(String query) {
 		TpSearchKeyword searchKeyword = searchKeywordRepository.findByKeyword(query);
+		TpSearchKeyword saveKeyword = null;
 		
 		if(searchKeyword != null) {
 			searchKeyword.setSearchCnt(searchKeyword.getSearchCnt() +1 );
-			searchKeywordRepository.save(searchKeyword);
+			saveKeyword= searchKeywordRepository.save(searchKeyword);
 		}else {
-			searchKeyword = new TpSearchKeyword();
-			searchKeyword.setKeyword(query);
-			searchKeyword.setSearchCnt(1);
-			searchKeywordRepository.save(searchKeyword);
+			SearchKeywordReqDto searchKeywordReq = new SearchKeywordReqDto(query,1);
+			saveKeyword =searchKeywordRepository.save(searchKeywordReq.toEntity());
 		}
-		/*
-		 * List<TpSearchKeyword> temp= searchKeywordRepository.findAll(); if(true)
-		 */
-			//throw new ParameterException("hashtag name cannot be null or empty");
-
-		//			throw new CustomException(INVALID_PARAMETER);
 		
-				
+		if(saveKeyword == null) {
+			throw new CustomException(ENTITY_DUPLICATION);
+		}	
+		
+		return saveKeyword;
+		
 	}
 
 }

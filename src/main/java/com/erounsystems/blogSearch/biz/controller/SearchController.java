@@ -25,18 +25,18 @@ public class SearchController {
 
     @Autowired
 	private SearchKeywordService searchKeywordService;
-
     
 	/*
 	 * 블로그 검색
 	 */   
     @GetMapping("/blogSearch")
-    public ResponseEntity<KakaoBlogResDto> callApi(KakaoBlogReqDto param){       
+    public ResponseEntity<KakaoBlogResDto> blogSearch(KakaoBlogReqDto param){       
         
         // 검색어 저장
-    	//searchKeywordService.saveKeyword(param.getQuery());  
+    	searchKeywordService.saveKeyword(param.getQuery());  
     	// 블로그 검색
-        return ResponseEntity.ok(blogSearchService.getBlog(param));
+    	KakaoBlogResDto kakaoBlogResDto = blogSearchService.getBlog(param);
+        return new ResponseEntity<KakaoBlogResDto>(kakaoBlogResDto, HttpStatus.OK);
     }
     
 

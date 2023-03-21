@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import com.erounsystems.blogSearch.biz.dto.SearchKeywordReqDto;
+import com.erounsystems.blogSearch.biz.dto.SearchKeywordResDto;
 import com.erounsystems.blogSearch.biz.entity.TpSearchKeyword;
 
 @DataJpaTest
@@ -23,15 +25,14 @@ class TpSearchKeywordRepositoryTest {
 	void testFindByKeyword() {
 		        
       	// given
-		TpSearchKeyword saveKeyword1 = searchKeywordRepository.save(new TpSearchKeyword("집짓기",3));
-		TpSearchKeyword saveKeyword2 = searchKeywordRepository.save(new TpSearchKeyword("축구",5));
+		TpSearchKeyword saveKeyword1 = searchKeywordRepository.save(new SearchKeywordReqDto("집짓기",3).toEntity());
+		TpSearchKeyword saveKeyword2 = searchKeywordRepository.save(new SearchKeywordReqDto("축구",5).toEntity());
+		
 		// when
 		TpSearchKeyword findKeyword1 = searchKeywordRepository.findByKeyword(saveKeyword1.getKeyword());
 		TpSearchKeyword findKeyword2 = searchKeywordRepository.findByKeyword(saveKeyword2.getKeyword());
 		
 		// then
-		//assertEquals(findKeyword1.get.count(),2);
-
 		Assertions.assertThat(searchKeywordRepository.count()).isEqualTo(2);
 		Assertions.assertThat(findKeyword1.getKeyword()).isEqualTo("집짓기");
 		Assertions.assertThat(findKeyword1.getSearchCnt()).isEqualTo(3);
@@ -45,11 +46,9 @@ class TpSearchKeywordRepositoryTest {
 	void testSave() {
 		// given
 		String keyword = "부동산";
-		TpSearchKeyword searchKeyword = TpSearchKeyword.builder()
-											.keyword(keyword)
-											.searchCnt(4).build();
+		SearchKeywordReqDto searchKeyword = new SearchKeywordReqDto(keyword,4);
 		// when
-		 TpSearchKeyword saveKeyword = searchKeywordRepository.save(searchKeyword);
+		 TpSearchKeyword saveKeyword = searchKeywordRepository.save(searchKeyword.toEntity());
 
 		// then
 		assertEquals(keyword, saveKeyword.getKeyword());
