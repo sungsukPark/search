@@ -2,20 +2,25 @@ package com.erounsystems.blogSearch.biz.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogReqDto;
 import com.erounsystems.blogSearch.biz.dto.KakaoBlogResDto;
-import com.erounsystems.blogSearch.biz.entity.TpSearchKeyword;
+import com.erounsystems.blogSearch.biz.dto.SearchKeywordResDto;
 import com.erounsystems.blogSearch.biz.service.BlogSearchService;
 import com.erounsystems.blogSearch.biz.service.SearchKeywordService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class SearchController {
@@ -26,16 +31,19 @@ public class SearchController {
     @Autowired
 	private SearchKeywordService searchKeywordService;
     
+    private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
 	/*
 	 * 블로그 검색
 	 */   
-    @GetMapping("/blogSearch")
-    public ResponseEntity<KakaoBlogResDto> blogSearch(KakaoBlogReqDto param){       
+    @GetMapping("/v1/blogSearch")
+    public ResponseEntity<KakaoBlogResDto> blogSearch( @Valid KakaoBlogReqDto param){       
         
+           
         // 검색어 저장
     	searchKeywordService.saveKeyword(param.getQuery());  
     	// 블로그 검색
     	KakaoBlogResDto kakaoBlogResDto = blogSearchService.getBlog(param);
+    	
         return new ResponseEntity<KakaoBlogResDto>(kakaoBlogResDto, HttpStatus.OK);
     }
     
@@ -43,12 +51,14 @@ public class SearchController {
     /*
      * 인기 검색어 목록
      */
-    @GetMapping("/popualKeywordList")
-    public ResponseEntity<List<TpSearchKeyword>> popSearchKeywordList() {
+    @GetMapping("/v1/popualKeyword")
+    public ResponseEntity<List<SearchKeywordResDto>> popSearchKeywordList() {
+    	
     	Pageable paging =  PageRequest.of(0,10,Sort.Direction.DESC,"searchCnt");  
-		List<TpSearchKeyword> popSearchKeywordList  = searchKeywordService.getPopSearchKeywordList(paging).getContent();
+		List<SearchKeywordResDto> popSearchKeywordList  = searchKeywordService.getPopSearchKeywordList(paging);
 			
-		return new ResponseEntity<List<TpSearchKeyword>>(popSearchKeywordList, HttpStatus.OK);
+		return new ResponseEntity<List<SearchKeywordResDto>>(popSearchKeywordList, HttpStatus.OK);
+		
     }
     
 }

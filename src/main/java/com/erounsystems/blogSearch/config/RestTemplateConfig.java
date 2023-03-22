@@ -1,5 +1,8 @@
 package com.erounsystems.blogSearch.config;
 
+import java.nio.charset.Charset;
+import java.time.Duration;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,8 +11,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.time.Duration;
+import com.erounsystems.blogSearch.exception.RestTemplateException;
 
 @Configuration
 public class RestTemplateConfig {
@@ -20,6 +22,7 @@ public class RestTemplateConfig {
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
                 .setConnectTimeout(Duration.ofMillis(5000)) // connection-timeout
                 .setReadTimeout(Duration.ofMillis(5000)) // read-timeout
+                .errorHandler(new RestTemplateException())
                 .additionalMessageConverters(new StringHttpMessageConverter(Charset.forName("UTF-8")))
                 .build();
     }
