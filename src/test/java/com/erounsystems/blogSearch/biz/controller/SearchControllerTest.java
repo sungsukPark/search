@@ -44,15 +44,11 @@ class SearchControllerTest {
 	private BlogSearchService blogSearchService;
 	
 	@Test
-	void testBlogSearch() throws Exception {
+	@DisplayName("블로그 검색 테스트1")
+	void test1BlogSearch() throws Exception {
 		//given
 		List<KakaoBlogDocuments> documents = new ArrayList<KakaoBlogDocuments>();
-        URI targetUrl = UriComponentsBuilder
-                .fromUriString("https://dapi.kakao.com/v2/search/blog") 
-                .queryParam("query", "부동산")
-                .build()
-                .encode(StandardCharsets.UTF_8) 
-                .toUri();
+     
 		//documents.add(KakaoBlogDocuments.builder().title("title").contents("content").url("abc").blogname("blogname").thumbnail("thumbnail").build());
 		KakaoBlogResDto kakaoBlogResDto = KakaoBlogResDto.builder().meta(KakaoBlogMeta.builder().total_count(100).pageable_count(50).is_end(false).build())
 								 .documents(documents).build();
@@ -62,9 +58,33 @@ class SearchControllerTest {
 		when(blogSearchService.getBlog(any())).thenReturn( kakaoBlogResDto);
 
 		//
-		mockMvc.perform(
-				get("/blogSearch").param("query","부동산")
-		)
+		mockMvc.perform(get("/v1/blogSearch").param("query","부동산"))
+		        .andDo(print())               
+		        .andExpect(status().isOk());
+
+	}
+	
+	@Test
+	@DisplayName("블로그 검색 테스트2")
+	void test2BlogSearch() throws Exception {
+	
+		mockMvc.perform(get("/v1/blogSearch")
+						.param("query","부동산")
+						.param("sort","recency"))
+		        .andDo(print())               
+		        .andExpect(status().isOk());
+
+	}
+	
+	@Test
+	@DisplayName("블로그 검색 테스트3")
+	void test3BlogSearch() throws Exception {
+	
+		mockMvc.perform(get("/v1/blogSearch")
+						.param("query","부동산")
+						.param("sort","recency")
+						.param("page","1")
+						.param("size","5"))
 		        .andDo(print())               
 		        .andExpect(status().isOk());
 
@@ -72,9 +92,11 @@ class SearchControllerTest {
 
 	@Test
 	@DisplayName("인기 검색어 목록 테스트")
-	@Disabled
-	void testPopSearchKeywordList() {
-		fail("Not yet implemented");
+	void testPopSearchKeywordList() throws Exception {
+		
+		mockMvc.perform(get("/v1/popualKeyword"))
+        .andDo(print())               
+        .andExpect(status().isOk());
 	}
 
 }

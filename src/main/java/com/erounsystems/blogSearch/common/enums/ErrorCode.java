@@ -30,7 +30,9 @@ public enum ErrorCode {
     REST_CLIENT_ERROR(500, "REST client 에러입니다. 서버 팀에 연락주세요!"),
 	
 	//900 CUSTOMER ERROR
-	VALIDATION_ERROR(900);
+	VALIDATION_ERROR(900),
+	
+	VALIDATION_SORT_ERROR(900, "sort는 accuracy, recency 둘중 하나의 값이어야 합니다");
 	
     private final int status;
     private final String message;

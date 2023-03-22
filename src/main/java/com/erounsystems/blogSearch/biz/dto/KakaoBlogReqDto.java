@@ -15,7 +15,6 @@ public class KakaoBlogReqDto implements Serializable{
 	@NotBlank(message = "search word must not be null")
 	private String query;
 	//정렬 방식 accuracy(정확도순) , recency(최신순)
-	@Pattern(regexp="/^accuracy|recency&/", message = "accuracy or recency")
 	private String sort;
 	
 	@Min(1)
